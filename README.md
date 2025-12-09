@@ -1,16 +1,33 @@
-# React + Vite
+# WhatsApp Chat Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+- This project is a web application that allows users to create simulated WhatsApp conversations by inputting or uploading chat scripts. The app parses the dialogues, animates them in a WhatsApp-style chat interface, and optionally exports the simulation as a video.
+- It's designed to be lightweight, client-side focused, and easy to extend.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Participant Selection**: Users choose the number of chat participants and assign names.
+- **Script Input**: Enter dialogues via textarea or upload files (.txt or .docx).
+- **Animation**: Simulates real-time messaging with typing indicators and scrolling.
+- **Video Export (Future/Optional)**: Generate MP4 or GIF of the animated chat using server-side rendering or React-based video tools.
+- **Responsive Design**: Works on desktop and mobile browsers.
+- **Validation**: Checks for input errors like mismatched senders.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend**: React.js with JavaScript (ES6+).
+- **Styling**: Tailwind CSS for **WhatsApp Mobile UI** (specifically targeting mobile layout, not desktop).
+- **Animations**: Anime.js or GSAP for message sequencing.
+- **File Parsing**: Mammoth.js for .docx (client-side).
+- **Video Generation (Future)**: Remotion (React-based) or Puppeteer (server-side) for high-fidelity export.
+- **Backend (Optional)**: Node.js/Express for advanced file handling or video rendering.
+- **Deployment**: Vercel or Netlify.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Contributing
+
+Fork the repo, create a branch, and submit a pull request. Follow standard React best practices.
+
+## License
+
+MIT License. See LICENSE file for details.
