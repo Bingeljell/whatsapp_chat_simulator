@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
-function ParticipantSelector({ onParticipantsChange }) {
+function ParticipantSelector({ onParticipantsChange, onChatNameChange }) {
   const [numParticipants, setNumParticipants] = useState(2);
   const [participantNames, setParticipantNames] = useState(['You', 'Participant 2']);
+  const [chatName, setChatName] = useState('');
 
   const handleNumParticipantsChange = (event) => {
     const newNum = parseInt(event.target.value, 10);
@@ -23,6 +24,14 @@ function ParticipantSelector({ onParticipantsChange }) {
     newNames[index] = event.target.value;
     setParticipantNames(newNames);
   };
+  
+  const handleChatNameChange = (event) => {
+    const name = event.target.value;
+    setChatName(name);
+    if (onChatNameChange) {
+      onChatNameChange(name);
+    }
+  };
 
   // Notify parent component of changes (e.g., App.jsx)
   React.useEffect(() => {
@@ -32,6 +41,20 @@ function ParticipantSelector({ onParticipantsChange }) {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md mb-4">
       <h2 className="text-xl font-semibold mb-3">Participants</h2>
+
+      <div className="mb-4">
+        <label htmlFor="chatName" className="block text-gray-700 text-sm font-bold mb-2">
+          Chat Name / Group Title (Optional):
+        </label>
+        <input
+          type="text"
+          id="chatName"
+          value={chatName}
+          onChange={handleChatNameChange}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          placeholder="e.g. Family Group or Alice"
+        />
+      </div>
 
       <div className="mb-4">
         <label htmlFor="numParticipants" className="block text-gray-700 text-sm font-bold mb-2">

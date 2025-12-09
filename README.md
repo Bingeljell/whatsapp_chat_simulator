@@ -14,6 +14,10 @@
 - **Responsive Design**: Works on desktop and mobile browsers.
 - **Validation**: Checks for input errors like mismatched senders.
 
+## Design Note
+
+**Sender Names**: In this simulator, sender names are displayed above **every** message bubble (including the user's own messages). This is an intentional deviation from the native WhatsApp 1-on-1 chat UI to ensure maximum clarity for viewers watching the simulated conversation.
+
 ## Tech Stack
 
 - **Frontend**: React.js with JavaScript (ES6+).

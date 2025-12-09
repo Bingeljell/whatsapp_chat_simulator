@@ -48,7 +48,7 @@ function ScriptInput({ participants, onScriptParsed }) {
   const handleScriptChange = (event) => {
     const rawScript = event.target.value;
     setScript(rawScript);
-    parseScript(rawScript); // Parse and validate on each change
+    // parseScript(rawScript); // REMOVED: Don't parse on every keystroke
     setFileName(''); // Clear file name if user starts typing manually
   };
 
