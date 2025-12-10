@@ -24,37 +24,27 @@ This document outlines a high-level approach to developing a web app where users
 
 ## Project Structure
 
-Organize the project for modularity, scalability, and ease of maintenance. Use a monorepo if combining frontend and backend.
+Organize the project for modularity, scalability, and ease of maintenance. We are using a **Monorepo** structure.
 
-### Frontend (React App)
+### Root Directory
+- `package.json`: Orchestrates scripts for both frontend and backend.
+- `frontend/`: The React + Vite application.
+- `backend/`: The Node.js + Remotion video rendering server.
 
-- **Root Directory**: `/whatsapp-chat-mocker`
+### Frontend (React App) - `/frontend`
 - **Key Folders**:
-    - `/src/components`: Reusable UI pieces.
-        - `ParticipantSelector.jsx`: Form for selecting participant count and names.
-        - `ScriptInput.jsx`: Textarea for typing dialogues or file upload input.
-        - `ChatInterface.jsx`: The animated chat view (DOM or canvas-based).
-        - `VideoExporter.jsx`: Button and logic for recording/exporting.
-    - `/src/utils`: Helper functions.
-        - `parseScript.js`: Function to process input text into an array of `{sender, message}` objects (e.g., split lines by colon).
-        - `animateChat.js`: Logic for sequencing messages with delays (using setTimeout or animation libraries).
-    - `/src/assets`: Static files like WhatsApp icons, backgrounds.
-    - `/src/pages`: If using React Router.
-        - `Home.jsx`: Main page with input form.
-        - `Preview.jsx`: Animation playback and export.
-- **Entry Point**: `/src/App.jsx` – Routes and global state (e.g., via Context API for sharing dialogues).
-- **Configuration**: `package.json` with dependencies (e.g., `react`, `animejs`).
+    - `src/components`: Reusable UI pieces (`ParticipantSelector`, `ScriptInput`, `ChatInterface`).
+    - `src/utils`: Helper functions (`parseScript`).
+    - `src/App.jsx`: Main application logic.
+    - `tailwind.config.js`: UI Styling configuration.
 
-### Backend (If Needed, Node.js/Express)
-
-- **Root Directory**: `/server` (separate or integrated).
-- **Key Folders**:
-    - `/routes`: API endpoints.
-        - `upload.js`: POST for file parsing (return JSON dialogues).
-        - `generateVideo.js`: POST for script, uses Puppeteer to render and record.
-    - `/utils`: Server-side parsers (e.g., Mammoth for .docx).
-- **Entry Point**: `server.js` – Set up Express app, CORS for frontend integration.
-- **Configuration**: `package.json` with dependencies (e.g., `express`, `puppeteer`, `multer`).
+### Backend (Node.js + Remotion) - `/backend`
+- **Purpose**: dedicated server to handle video rendering requests.
+- **Key Files**:
+    - `index.js`: Express server entry point.
+    - `src/Video.jsx`: Remotion composition root.
+    - `src/compositions/ChatVideo.jsx`: The video-optimized version of `ChatInterface`.
+    - `Dockerfile`: For deployment to DigitalOcean VPS.
 
 ## Development Approach
 
@@ -73,10 +63,10 @@ Organize the project for modularity, scalability, and ease of maintenance. Use a
     - Use state to add messages one-by-one with timed intervals.
     - Add "typing..." indicators before each message.
 
-4. **Add Video Export (Future Phase)**:
-    - **Approach A (Remotion)**: Use Remotion to render the React components to video frames.
-    - **Approach B (Server-side)**: Send script to Node.js backend, which spins up a Puppeteer instance to record the screen.
-    - Provide format options (MP4) and download links.
+4. **Add Video Export (Remotion Backend)**:
+    - **Architecture**: A Node.js Express server running on a VPS (DigitalOcean).
+    - **Process**: Frontend sends the chat script (JSON) to the backend. Backend uses Remotion to render the video frame-by-frame and returns the MP4 file.
+    - **Hosting**: Backend deployed via Docker. Frontend can remain static (or served by the same VPS).
 
 ### Enhancements and Best Practices:
 
@@ -86,4 +76,23 @@ Organize the project for modularity, scalability, and ease of maintenance. Use a
 - **Testing**: Unit tests with Jest (components/logic); end-to-end with Cypress.
 - **Security**: Sanitize inputs to prevent XSS if rendering user text.
 
-This structure emphasizes a clean separation of concerns, making it easy to iterate. Begin by setting up the React project and prototyping the input-to-preview flow.
+## Progress Status (as of Dec 9, 2025)
+
+### Completed Tasks
+1. **[x] Initialize React Project**: Scaffolded with Vite and configured Tailwind CSS v3.
+2. **[x] Basic Mobile UI Structure**: Set up `App.jsx` with mobile-width container, header, and background.
+3. **[x] Participant Selector**: Created component for managing participant count, names, and chat title.
+4. **[x] Script Input & Parsing**: Implemented text input and client-side parsing logic.
+5. **[x] Chat Animation**: Built `ChatInterface` with sequential messaging, typing indicators, and auto-scroll.
+6. **[x] File Upload**: Integrated `mammoth.js` for `.docx` and `.txt` support.
+
+### Pending / Future Tasks
+7. **[ ] Monorepo Restructure**: Separate project into `frontend` (React) and `backend` (Node/Remotion) directories.
+8. **[ ] Backend Setup**: Initialize Node.js Express server with Remotion dependencies.
+9. **[ ] Remotion Composition**: Create `ChatVideo.jsx` to replicate `ChatInterface` logic using Remotion's frame-based timing.
+10. **[ ] Video Export Endpoint**: Create API endpoint to receive script, render video, and return file.
+11. **[ ] Refinements & Enhancements**:
+    - Add Emoji picker support.
+    - Improve error handling (e.g., visual feedback for bad script format).
+    - Add "Read" receipts (blue ticks) animation.
+    - Support for image/media messages in script (e.g., `Sender: [Image] caption`).

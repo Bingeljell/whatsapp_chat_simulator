@@ -35,3 +35,42 @@ Fork the repo, create a branch, and submit a pull request. Follow standard React
 ## License
 
 MIT License. See LICENSE file for details.
+
+## Installation
+
+1. Clone the repository: `git clone <repo-url>`.
+2. Navigate to the project: `cd WA_Chat_Simulator`.
+3. Install all dependencies:
+   ```bash
+   npm run install:all
+   # OR manually:
+   # npm install
+   # cd frontend && npm install
+   # cd backend && npm install
+   ```
+
+## Usage
+
+This project is a monorepo containing a React frontend and a Node.js/Remotion backend.
+
+**1. Start the Backend (Video Renderer):**
+Open a terminal and run:
+```bash
+cd backend
+npm start
+```
+*Server will run at http://localhost:8000*
+
+**2. Start the Frontend (UI):**
+Open a **new** terminal window and run:
+```bash
+cd frontend
+npm run dev
+```
+*App will open at http://localhost:5173*
+
+**3. Generate Video:**
+- Create your chat script in the UI.
+- Click "Process Script" to preview.
+- Click the **"Export Video (MP4)"** button overlaying the chat.
+- The backend will render the video (this may take a few seconds) and download it automatically.
