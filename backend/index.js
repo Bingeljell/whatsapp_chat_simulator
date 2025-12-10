@@ -69,6 +69,8 @@ app.post('/render', async (req, res) => {
         res.download(tmpFile, 'chat-video.mp4', (err) => {
             if (err) console.error("Error sending file:", err);
             // Cleanup: fs.unlinkSync(tmpFile); // Optional: delete after send
+            fs.unlinkSync(tmpFile); // Cleanup: delete after send
+
         });
 
     } catch (err) {
