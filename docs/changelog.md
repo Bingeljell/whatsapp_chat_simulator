@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - 2025-12-09
+## [Unreleased] - 2025-12-10
 
 ### Added
 - **Project Setup**:
@@ -26,6 +26,8 @@
         - Styled message bubbles to differentiate "You" (green, right) vs other participants (white, left).
         - Added "Fake" input footer (emoji, input pill, camera, mic) for visual authenticity.
         - **Design Choice**: Enabled sender name display for *all* messages (including "You") to ensure simulation clarity.
+    - `VideoExporter.jsx`:
+        - Component to trigger video rendering on the backend.
 
 - **UI/UX**:
     - **Mobile Layout**: constrained `App.jsx` to a centered, mobile-width container (`max-w-md`) with shadow to mimic a phone screen on desktop.
@@ -34,21 +36,35 @@
         - Added authentic WhatsApp-style icons (Video Call, Voice Call, Menu).
         - Added "Back" button logic to return from chat view to editor.
     - **Styling**: Defined custom WhatsApp-themed colors in `tailwind.config.js` (`whatsapp-green-dark`, `whatsapp-bg`, etc.).
+    - **Branding**:
+        - Updated `frontend/index.html` with Title, Favicon, and SEO/Open Graph meta tags.
+        - Integrated `wacm_logo.png` (from `assets/`) into the `App.jsx` desktop background.
+        - Copied `wacm_logo.png` to `frontend/public/logo.png` and `frontend/public/favicon.png`.
 
 ### Changed
 - **Architecture**:
-    - **Monorepo**: Decided to restructure project into `frontend` (React) and `backend` (Node.js/Remotion) to support high-quality video generation on a VPS.
-    - **Video Strategy**: Selected **Remotion (Server-Side)** over Puppeteer or Client-Side recording to ensure frame-perfect output on shared VPS hardware (DigitalOcean Docker).
+    - **Monorepo**: Restructured project into `frontend` (React + Vite) and `backend` (Node.js/Remotion) directories.
+    - **Video Strategy**: Selected **Remotion (Server-Side)** for high-quality, frame-perfect video generation on a VPS.
+    - **Remotion Setup**: Configured `backend/` for Remotion rendering, including `ChatVideo.jsx` (Remotion composition) and an Express server.
 
 - **Documentation**:
-    - Updated `docs/POA.md` and `docs/approach.md` to reflect the move from Konva.js to Remotion/Puppeteer for future video export.
-    - Updated `docs/approach.md` to specify "WhatsApp Mobile UI" as the target design.
-    - Documented the decision to use Tailwind v3 over v4 for stability.
+    - Updated `docs/POA.md`, `docs/approach.md` and `README.md` to reflect architectural changes, video strategy, and updated installation/usage instructions.
+    - Updated `docs/approach.md` and `docs/changelog.md` with progress status and detailed change history.
 
 ### Fixed
-- **Animation Bug**: prevented chat animation from starting immediately upon typing in `ScriptInput`. Now requires explicit button click.
-- **Sender Names**: Fixed issue where sender names were hidden for "You" or in 1-on-1 chats. Now always visible for clarity.
+- **Animation Bug**: Prevented chat animation from starting immediately upon typing in `ScriptInput`; now triggered by explicit button click.
+- **Sender Names**: Ensured sender names are always visible for clarity above all messages.
+- **Backend Remotion Rendering**:
+    - Corrected `ChatVideo.jsx` import path in `backend/src/index.js` for ES Modules.
+    - Resolved Webpack `CssSyntaxError` by installing missing loaders and using `@remotion/tailwind` for proper CSS/Tailwind processing.
+    - Updated Remotion dependency versions for compatibility.
+- **Temporary Files**: Enabled automatic cleanup of temporary `.mp4` files on the backend after download.
+- **UI Consistency**: Synchronized header and footer icons in `backend/src/ChatVideo.jsx` to match frontend design.
+- **Video Dimensions**: Adjusted Remotion composition size (`width=400`, `height=800`) for a more mobile-like aspect ratio.
+- **Message Breathing Room**: Increased padding and font sizes in both frontend `ChatInterface.jsx` and backend `ChatVideo.jsx` for improved readability.
 
 ### Dependencies
-- Added `mammoth` for document parsing.
-- Added `tailwindcss`, `postcss`, `autoprefixer`.
+- Added `mammoth` for document parsing (frontend).
+- Added `tailwindcss`, `postcss`, `autoprefixer` (frontend).
+- Added `@remotion/bundler`, `@remotion/renderer`, `@remotion/cli`, `@remotion/tailwind`, `remotion`, `express`, `cors`, `css-loader`, `style-loader`, `postcss-loader` (backend).
+- Added `concurrently` (root `package.json`).
