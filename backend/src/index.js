@@ -11,8 +11,8 @@ export const RemotionRoot = () => {
                 component={ChatVideo}
                 durationInFrames={30 * 10} // Default duration, overridden by server
                 fps={30}
-                width={720} // Mobile width
-                height={1280} // Mobile height
+                width={400} // Mobile width
+                height={800} // Mobile height
                 defaultProps={{
                     script: [],
                     participants: ["You", "Them"],

@@ -93,12 +93,12 @@ export const ChatVideo = ({ script, participants, chatName }) => {
                     const isMe = activeParticipants[0] === msg.sender;
 
                     return (
-                        <div key={index} className={`flex mb-2 ${isMe ? 'justify-end' : 'justify-start'}`} style={{ transform: `scale(${scale})` }}>
-                            <div className={`p-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
-                                <span className={`font-bold text-xs block mb-1 ${isMe ? 'text-green-700' : 'text-gray-700'}`}>
+                        <div key={index} className={`flex mb-3 ${isMe ? 'justify-end' : 'justify-start'}`} style={{ transform: `scale(${scale})` }}>
+                            <div className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
+                                <span className={`font-bold text-sm block mb-1 ${isMe ? 'text-green-700' : 'text-gray-700'}`}>
                                     {msg.sender}
                                 </span>
-                                <p className="text-sm leading-relaxed pr-2 text-black">{msg.message}</p>
+                                <p className="text-base leading-relaxed pr-2 text-black">{msg.message}</p>
                             </div>
                         </div>
                     );
@@ -106,8 +106,8 @@ export const ChatVideo = ({ script, participants, chatName }) => {
 
                 {/* Typing Indicator */}
                 {timedMessages.some(msg => frame >= msg.typingStart && frame < msg.typingEnd) && (
-                    <div className="flex justify-start mb-2">
-                        <div className="bg-white p-3 rounded-lg rounded-tl-none shadow-sm text-gray-500 text-sm italic animate-pulse">
+                    <div className="flex justify-start mb-3 animate-pulse">
+                        <div className="bg-white px-3 py-2 rounded-lg rounded-tl-none shadow-sm text-gray-500 text-sm italic">
                             typing...
                         </div>
                     </div>

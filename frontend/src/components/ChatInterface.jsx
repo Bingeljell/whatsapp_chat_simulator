@@ -60,18 +60,18 @@ function ChatInterface({ messages, participants }) {
             }`}
           >
             <div
-              className={`p-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${
+              className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${
                 participants[0] === msg.sender
                   ? 'bg-whatsapp-bubble text-black rounded-tr-none'
                   : 'bg-white text-black rounded-tl-none'
               }`}
             >
               {/* Always show sender name for simulation clarity */}
-              <span className={`font-bold text-xs block mb-1 ${participants[0] === msg.sender ? 'text-green-700' : 'text-gray-700'}`}>
+              <span className={`font-bold text-sm block mb-1 ${participants[0] === msg.sender ? 'text-green-700' : 'text-gray-700'}`}>
                 {msg.sender}
               </span>
               
-              <p className="text-sm leading-relaxed pr-2">{msg.message}</p>
+              <p className="text-base leading-relaxed pr-2">{msg.message}</p>
               
               {/* Timestamp */}
               <span className="text-[10px] text-gray-500 absolute bottom-1 right-2">
@@ -81,8 +81,8 @@ function ChatInterface({ messages, participants }) {
           </div>
         ))}
         {isTyping && (
-          <div className="flex justify-start mb-2 animate-pulse">
-            <div className="bg-white p-3 rounded-lg rounded-tl-none shadow-sm text-gray-500 text-sm italic">
+          <div className="flex justify-start mb-3 animate-pulse">
+            <div className="bg-white px-3 py-2 rounded-lg rounded-tl-none shadow-sm text-gray-500 text-sm italic">
               typing...
             </div>
           </div>
