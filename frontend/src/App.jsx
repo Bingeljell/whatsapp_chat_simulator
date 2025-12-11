@@ -26,6 +26,15 @@ function App() {
     // Outer Desktop Container
     <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4 relative font-sans">
       
+      {/* Branding (Top Left) */}
+      <div className="absolute top-8 left-8 flex items-center gap-3 opacity-80 hover:opacity-100 transition-opacity hidden md:flex">
+        <img src="/logo.png" alt="WhatsApp Chat Simulator Logo" className="w-12 h-12" />
+        <div>
+          <h1 className="text-xl font-bold text-gray-700">WhatsApp Chat Simulator</h1>
+          <p className="text-sm text-gray-500">Create realistic mockups instantly</p>
+        </div>
+      </div>
+
       {/* Mobile Device Simulator Container */}
       <div className="w-full max-w-md h-[850px] max-h-[90vh] bg-gray-100 flex flex-col shadow-2xl rounded-[30px] overflow-hidden border-[8px] border-gray-800 relative">
         
