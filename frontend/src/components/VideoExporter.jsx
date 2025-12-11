@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 function VideoExporter({ script, participants, chatName }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resolution, setResolution] = useState('720p'); // Default to 720p
+  const [quality, setQuality] = useState('standard'); // Default to standard
 
   const handleExport = async () => {
     setLoading(true);
@@ -17,12 +19,15 @@ function VideoExporter({ script, participants, chatName }) {
         body: JSON.stringify({
           script,
           participants,
-          chatName: chatName || "Chat Simulator"
+          chatName: chatName || "Chat Simulator",
+          resolution, // Pass selected resolution
+          quality,    // Pass selected quality
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to render video');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to render video');
       }
 
       // Convert response to Blob and download
@@ -30,7 +35,7 @@ function VideoExporter({ script, participants, chatName }) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `whatsapp-chat-${Date.now()}.mp4`;
+      a.download = `whatsapp-chat-${Date.now()}-${resolution}-${quality}.mp4`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -38,14 +43,48 @@ function VideoExporter({ script, participants, chatName }) {
 
     } catch (err) {
       console.error(err);
-      setError('Error exporting video. Is the backend server running?');
+      setError('Error exporting video: ' + err.message + ' Is the backend server running?');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="mt-4 flex flex-col items-center">
+    <div className="flex flex-col items-center p-3 bg-white rounded-lg shadow-lg">
+      <h3 className="text-md font-semibold mb-3">Export Options</h3>
+      
+      {/* Resolution Selector */}
+      <div className="mb-3 w-full">
+        <label htmlFor="resolution" className="block text-gray-700 text-sm font-bold mb-1">
+          Resolution:
+        </label>
+        <select
+          id="resolution"
+          value={resolution}
+          onChange={(e) => setResolution(e.target.value)}
+          className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        >
+          <option value="720p">720p (HD Mobile)</option>
+          <option value="1080p">1080p (Full HD Mobile)</option>
+        </select>
+      </div>
+
+      {/* Quality Selector */}
+      <div className="mb-4 w-full">
+        <label htmlFor="quality" className="block text-gray-700 text-sm font-bold mb-1">
+          Quality:
+        </label>
+        <select
+          id="quality"
+          value={quality}
+          onChange={(e) => setQuality(e.target.value)}
+          className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        >
+          <option value="standard">Standard (Balanced)</option>
+          <option value="high">High (Larger File)</option>
+        </select>
+      </div>
+
       {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
       
       <button

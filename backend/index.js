@@ -27,13 +27,34 @@ const calculateDuration = (messages) => {
 
 app.post('/render', async (req, res) => {
     try {
-        const { script, participants, chatName } = req.body;
+        const { script, participants, chatName, resolution, quality } = req.body;
 
         if (!script || !participants) {
             return res.status(400).json({ error: "Missing script or participants" });
         }
 
-        console.log("Starting render for:", chatName);
+        console.log("Starting render for:", chatName, " Resolution:", resolution, " Quality:", quality);
+
+        // Determine Composition ID based on resolution
+        let compositionId = 'ChatVideo'; // Default (400x800)
+        
+        switch (resolution) {
+            case '1080p':
+                compositionId = 'ChatVideo-1080p';
+                break;
+            case '720p':
+                compositionId = 'ChatVideo-720p';
+                break;
+            default:
+                compositionId = 'ChatVideo-720p'; // Default to 720p if unrecognized
+                break;
+        }
+
+        // Determine CRF (Constant Rate Factor) based on quality
+        let crf = 18; // Default (Standard)
+        if (quality === 'high') {
+            crf = 10; // Very High quality (Near lossless, larger file size)
+        }
 
         // 1. Bundle the Remotion project
         const bundled = await bundle(path.join(process.cwd(), './src/index.js'), () => undefined, {
@@ -43,15 +64,15 @@ app.post('/render', async (req, res) => {
         // 2. Select composition
         const composition = await selectComposition({
             serveUrl: bundled,
-            id: 'ChatVideo',
+            id: compositionId, // Use the dynamic ID
             inputProps: { script, participants, chatName },
         });
 
         // 3. Render
         const durationInFrames = calculateDuration(script);
-        const tmpFile = path.join(os.tmpdir(), `chat-${Date.now()}.mp4`);
+        const tmpFile = path.join(os.tmpdir(), `chat-${Date.now()}-${resolution}-${quality}.mp4`);
 
-        console.log(`Rendering to ${tmpFile}... Frames: ${durationInFrames}`);
+        console.log(`Rendering to ${tmpFile}... Composition: ${compositionId}, Frames: ${durationInFrames}, CRF: ${crf}`);
 
         await renderMedia({
             composition,
@@ -61,6 +82,8 @@ app.post('/render', async (req, res) => {
             inputProps: { script, participants, chatName },
             durationInFrames: durationInFrames,
             fps: 30,
+            // Quality setting
+            crf: crf,
         });
 
         console.log("Render complete!");

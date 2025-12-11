@@ -9,10 +9,36 @@ export const RemotionRoot = () => {
             <Composition
                 id="ChatVideo"
                 component={ChatVideo}
-                durationInFrames={30 * 10} // Default duration, overridden by server
+                durationInFrames={30 * 10}
                 fps={30}
-                width={400} // Mobile width
-                height={800} // Mobile height
+                width={400}
+                height={800}
+                defaultProps={{
+                    script: [],
+                    participants: ["You", "Them"],
+                    chatName: "Preview"
+                }}
+            />
+            <Composition
+                id="ChatVideo-720p"
+                component={ChatVideo}
+                durationInFrames={30 * 10}
+                fps={30}
+                width={720}
+                height={1280}
+                defaultProps={{
+                    script: [],
+                    participants: ["You", "Them"],
+                    chatName: "Preview"
+                }}
+            />
+            <Composition
+                id="ChatVideo-1080p"
+                component={ChatVideo}
+                durationInFrames={30 * 10}
+                fps={30}
+                width={1080}
+                height={1920}
                 defaultProps={{
                     script: [],
                     participants: ["You", "Them"],
