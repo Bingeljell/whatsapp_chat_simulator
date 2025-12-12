@@ -49,16 +49,17 @@ app.post('/render', async (req, res) => {
             webpackOverride: (config) => enableTailwind(config),
         });
 
+        // Calculate duration EARLY
+        const durationInFrames = calculateDuration(script);
+
         // 2. Select composition
         const composition = await selectComposition({
             serveUrl: bundled,
             id: compositionId, // Use the dynamic ID
-            inputProps: { script, participants, chatName, renderId: Date.now() }, // Add random ID to bust cache
+            inputProps: { script, participants, chatName, renderId: Date.now(), durationInFrames }, // Pass duration to calculateMetadata
         });
 
         // 3. Render
-        const durationInFrames = calculateDuration(script); // Calculate duration early
-
         const tmpFile = path.join(os.tmpdir(), `chat-${Date.now()}-${resolution}-${quality}.mp4`);
 
         console.log(`Rendering to ${tmpFile}...`);
