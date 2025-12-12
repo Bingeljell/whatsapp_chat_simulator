@@ -58,10 +58,13 @@
     - Corrected `ChatVideo.jsx` import path in `backend/src/index.js` for ES Modules.
     - Resolved Webpack `CssSyntaxError` by installing missing loaders and using `@remotion/tailwind` for proper CSS/Tailwind processing.
     - Updated Remotion dependency versions for compatibility.
-- **Temporary Files**: Enabled automatic cleanup of temporary `.mp4` files on the backend after download.
-- **UI Consistency**: Synchronized header and footer icons in `backend/src/ChatVideo.jsx` to match frontend design.
-- **Video Dimensions**: Adjusted Remotion composition size (`width=400`, `height=800`) for a more mobile-like aspect ratio.
-- **Message Breathing Room**: Increased padding and font sizes in both frontend `ChatInterface.jsx` and backend `ChatVideo.jsx` for improved readability.
+    - Enabled automatic cleanup of temporary `.mp4` files on the backend after download.
+    - Synchronized `calculateDuration` logic in `backend/index.js` with `ChatVideo.jsx` timing.
+    - Fixed responsive scaling and clipping issues by correctly implementing `transform: scale()` in `backend/src/ChatVideo.jsx` to scale content up to target resolution (e.g., 1080p).
+    - Implemented auto-scrolling logic in `backend/src/ChatVideo.jsx` to keep latest messages in view.
+
+### Known Bugs
+- **Video Duration Mismatch**: The exported video length is currently fixed to the default Composition duration (1 minute) even when the actual animation finishes earlier. The `durationInFrames` override in `renderMedia` is not taking full effect.
 
 ### Dependencies
 - Added `mammoth` for document parsing (frontend).

@@ -20,7 +20,7 @@ const calculateDuration = (messages) => {
     let frames = 0;
     messages.forEach(msg => {
         const typingDuration = Math.max(15, Math.ceil((msg.message.length * 50) / 1000 * fps));
-        frames += (typingDuration + 30); // Typing + reading time
+        frames += (15 + typingDuration + 30); // 15 (pre-typing) + Typing + 30 (reading/pause)
     });
     return frames + 60; // +2 seconds buffer at end
 };
@@ -35,20 +35,8 @@ app.post('/render', async (req, res) => {
 
         console.log("Starting render for:", chatName, " Resolution:", resolution, " Quality:", quality);
 
-        // Determine Composition ID based on resolution
-        let compositionId = 'ChatVideo'; // Default (400x800)
-        
-        switch (resolution) {
-            case '1080p':
-                compositionId = 'ChatVideo-1080p';
-                break;
-            case '720p':
-                compositionId = 'ChatVideo-720p';
-                break;
-            default:
-                compositionId = 'ChatVideo-720p'; // Default to 720p if unrecognized
-                break;
-        }
+        // Always use the single registered composition (which defaults to 1080p)
+        const compositionId = 'ChatVideo';
 
         // Determine CRF (Constant Rate Factor) based on quality
         let crf = 18; // Default (Standard)
@@ -65,22 +53,24 @@ app.post('/render', async (req, res) => {
         const composition = await selectComposition({
             serveUrl: bundled,
             id: compositionId, // Use the dynamic ID
-            inputProps: { script, participants, chatName },
+            inputProps: { script, participants, chatName, renderId: Date.now() }, // Add random ID to bust cache
         });
 
         // 3. Render
-        const durationInFrames = calculateDuration(script);
+        const durationInFrames = calculateDuration(script); // Calculate duration early
+
         const tmpFile = path.join(os.tmpdir(), `chat-${Date.now()}-${resolution}-${quality}.mp4`);
 
-        console.log(`Rendering to ${tmpFile}... Composition: ${compositionId}, Frames: ${durationInFrames}, CRF: ${crf}`);
+        console.log(`Rendering to ${tmpFile}...`);
+        console.log(`Stats: Duration=${durationInFrames} frames (${(durationInFrames/30).toFixed(1)}s), CRF=${crf}, Size=${composition.width}x${composition.height}`);
 
         await renderMedia({
             composition,
             serveUrl: bundled,
             codec: 'h264',
             outputLocation: tmpFile,
-            inputProps: { script, participants, chatName },
-            durationInFrames: durationInFrames,
+            inputProps: { script, participants, chatName, renderId: Date.now(), durationInFrames }, // Pass duration here
+            durationInFrames: durationInFrames, // Still pass as override for safety
             fps: 30,
             // Quality setting
             crf: crf,

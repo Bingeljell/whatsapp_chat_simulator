@@ -51,7 +51,7 @@ function ChatInterface({ messages, participants }) {
   return (
     <div className="flex flex-col h-full bg-whatsapp-bg">
       {/* Message List Area */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar scrollbar-hide">
         {displayedMessages.map((msg, index) => (
           <div
             key={index}

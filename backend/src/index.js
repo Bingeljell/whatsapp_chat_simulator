@@ -9,41 +9,18 @@ export const RemotionRoot = () => {
             <Composition
                 id="ChatVideo"
                 component={ChatVideo}
-                durationInFrames={30 * 10}
-                fps={30}
-                width={400}
-                height={800}
-                defaultProps={{
-                    script: [],
-                    participants: ["You", "Them"],
-                    chatName: "Preview"
-                }}
-            />
-            <Composition
-                id="ChatVideo-720p"
-                component={ChatVideo}
-                durationInFrames={30 * 10}
-                fps={30}
-                width={720}
-                height={1280}
-                defaultProps={{
-                    script: [],
-                    participants: ["You", "Them"],
-                    chatName: "Preview"
-                }}
-            />
-            <Composition
-                id="ChatVideo-1080p"
-                component={ChatVideo}
-                durationInFrames={30 * 10}
                 fps={30}
                 width={1080}
                 height={1920}
                 defaultProps={{
                     script: [],
                     participants: ["You", "Them"],
-                    chatName: "Preview"
+                    chatName: "Preview",
+                    durationInFrames: 30 * 60 // Max duration for preview
                 }}
+                calculateMetadata={({ props }) => ({
+                    durationInFrames: props.durationInFrames || (30 * 60) // Use passed duration or default to 1 min
+                })}
             />
         </>
     );
