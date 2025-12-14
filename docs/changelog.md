@@ -28,6 +28,7 @@
         - **Design Choice**: Enabled sender name display for *all* messages (including "You") to ensure simulation clarity.
     - `VideoExporter.jsx`:
         - Component to trigger video rendering on the backend.
+        - Added Resolution (720p/1080p) and Quality (Standard/High) selection dropdowns.
 
 - **UI/UX**:
     - **Mobile Layout**: constrained `App.jsx` to a centered, mobile-width container (`max-w-md`) with shadow to mimic a phone screen on desktop.
@@ -60,11 +61,9 @@
     - Updated Remotion dependency versions for compatibility.
     - Enabled automatic cleanup of temporary `.mp4` files on the backend after download.
     - Synchronized `calculateDuration` logic in `backend/index.js` with `ChatVideo.jsx` timing.
-    - Fixed responsive scaling and clipping issues by correctly implementing `transform: scale()` in `backend/src/ChatVideo.jsx` to scale content up to target resolution (e.g., 1080p).
-    - Implemented auto-scrolling logic in `backend/src/ChatVideo.jsx` to keep latest messages in view.
-
-### Known Bugs
-- **Video Duration Mismatch**: The exported video length is currently fixed to the default Composition duration (1 minute) even when the actual animation finishes earlier. The `durationInFrames` override in `renderMedia` is not taking full effect.
+    - **Video Resolution & Quality**: Implemented "Responsive Font Sizing" in `backend/src/ChatVideo.jsx` to scale UI elements (text, padding, icons) based on the target render width (1080p). This replaced manual scaling hacks and fixed clipping issues.
+    - **Video Duration**: Fixed bug where video length was capped at 1 minute by moving duration calculation *before* composition selection in `backend/index.js`, ensuring `calculateMetadata` receives the correct duration prop.
+    - **Auto-Scroll**: Implemented auto-scroll logic in the backend video component to prevent messages from disappearing off-screen during long chats.
 
 ### Dependencies
 - Added `mammoth` for document parsing (frontend).

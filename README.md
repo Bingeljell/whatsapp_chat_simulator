@@ -28,9 +28,6 @@
 - **Backend (Optional)**: Node.js/Express for advanced file handling or video rendering.
 - **Deployment**: Vercel or Netlify.
 
-## Contributing
-
-Fork the repo, create a branch, and submit a pull request. Follow standard React best practices.
 
 ## License
 
@@ -56,7 +53,7 @@ This project is a monorepo containing a React frontend and a Node.js/Remotion ba
 **1. Start the Backend (Video Renderer):**
 Open a terminal and run:
 ```bash
-cd backend
+cd backend && npm start
 npm start
 ```
 *Server will run at http://localhost:8000*
@@ -64,7 +61,7 @@ npm start
 **2. Start the Frontend (UI):**
 Open a **new** terminal window and run:
 ```bash
-cd frontend
+cd frontend && npm run dev
 npm run dev
 ```
 *App will open at http://localhost:5173*

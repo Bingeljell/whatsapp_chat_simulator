@@ -87,12 +87,15 @@ Organize the project for modularity, scalability, and ease of maintenance. We ar
 6. **[x] File Upload**: Integrated `mammoth.js` for `.docx` and `.txt` support.
 
 ### Pending / Future Tasks
-7. **[ ] Monorepo Restructure**: Separate project into `frontend` (React) and `backend` (Node/Remotion) directories.
-8. **[ ] Backend Setup**: Initialize Node.js Express server with Remotion dependencies.
-9. **[ ] Remotion Composition**: Create `ChatVideo.jsx` to replicate `ChatInterface` logic using Remotion's frame-based timing.
-10. **[ ] Video Export Endpoint**: Create API endpoint to receive script, render video, and return file.
-11. **[ ] Refinements & Enhancements**:
-    - Add Emoji picker support.
-    - Improve error handling (e.g., visual feedback for bad script format).
-    - Add "Read" receipts (blue ticks) animation.
-    - Support for image/media messages in script (e.g., `Sender: [Image] caption`).
+
+#### UI/UX Refinements
+9. **[ ] Implement "Replay" button in the frontend UI.**
+10. **[ ] Implement User Colorization for messages in both frontend and backend.**
+11. **[ ] Update "Typing" Indicator to show "<user> is typing..." in both frontend and backend.**
+12. **[ ] Add Generic User/Group Icons in chat bubbles and headers for both frontend and backend.**
+
+#### Core Feature Enhancements
+13. **[ ] Add "Read" receipts (blue ticks) animation.**
+14. **[ ] Implement Emoji picker support.**
+15. **[ ] Improve error handling with better visual feedback.**
+16. **[ ] Add support for image/media messages in script.**

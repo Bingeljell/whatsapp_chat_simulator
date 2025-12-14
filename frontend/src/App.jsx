@@ -9,6 +9,7 @@ function App() {
   const [messages, setMessages] = useState([]); // State to hold parsed messages
   const [showChat, setShowChat] = useState(false); // State to control when to show chat
   const [chatName, setChatName] = useState(''); // Custom chat name
+  const [replayKey, setReplayKey] = useState(0); // Key to force ChatInterface re-render
 
   const handleParticipantsChange = (newParticipants) => {
     setParticipants(newParticipants);
@@ -20,6 +21,11 @@ function App() {
     setMessages(parsedMessages);
     // Only show chat if there are valid messages
     setShowChat(parsedMessages.length > 0); 
+    setReplayKey(prev => prev + 1); // Reset replay key to ensure fresh animation
+  };
+
+  const handleReplayAnimation = () => {
+    setReplayKey(prev => prev + 1); // Increment key to force remount of ChatInterface
   };
 
   return (
@@ -97,15 +103,26 @@ function App() {
               <ScriptInput participants={participants} onScriptParsed={handleScriptParsed} />
             </div>
           ) : (
-            <ChatInterface messages={messages} participants={participants} />
+            <ChatInterface key={replayKey} messages={messages} participants={participants} />
           )}
         </main>
       </div>
 
-      {/* Floating Export Button (Desktop View) */}
+      {/* Floating Buttons (Desktop View) */}
       {showChat && (
-        <div className="fixed bottom-8 right-8 z-50">
-           <VideoExporter script={messages} participants={participants} chatName={chatName} />
+        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end space-y-3">
+            {/* Replay Animation Button */}
+            <button
+                onClick={handleReplayAnimation}
+                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full shadow-md transition-all flex items-center"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004 12v.622m15.356-2A8.001 8.001 0 0120 12v.622" />
+                </svg>
+                Replay Animation
+            </button>
+            {/* Video Exporter */}
+            <VideoExporter script={messages} participants={participants} chatName={chatName} />
         </div>
       )}
       
