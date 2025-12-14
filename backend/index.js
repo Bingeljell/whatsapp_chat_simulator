@@ -27,7 +27,7 @@ const calculateDuration = (messages) => {
 
 app.post('/render', async (req, res) => {
     try {
-        const { script, participants, chatName, resolution, quality } = req.body;
+        const { script, participants, chatName, resolution, quality, participantColors } = req.body;
 
         if (!script || !participants) {
             return res.status(400).json({ error: "Missing script or participants" });
@@ -56,7 +56,7 @@ app.post('/render', async (req, res) => {
         const composition = await selectComposition({
             serveUrl: bundled,
             id: compositionId, // Use the dynamic ID
-            inputProps: { script, participants, chatName, renderId: Date.now(), durationInFrames }, // Pass duration to calculateMetadata
+            inputProps: { script, participants, chatName, renderId: Date.now(), durationInFrames, participantColors }, // Pass duration and colors
         });
 
         // 3. Render
@@ -70,7 +70,7 @@ app.post('/render', async (req, res) => {
             serveUrl: bundled,
             codec: 'h264',
             outputLocation: tmpFile,
-            inputProps: { script, participants, chatName, renderId: Date.now(), durationInFrames }, // Pass duration here
+            inputProps: { script, participants, chatName, renderId: Date.now(), durationInFrames, participantColors }, // Pass duration and colors
             durationInFrames: durationInFrames, // Still pass as override for safety
             fps: 30,
             // Quality setting

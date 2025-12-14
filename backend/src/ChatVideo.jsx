@@ -22,9 +22,12 @@ const calculateTimings = (messages, fps) => {
     return timings;
 };
 
-export const ChatVideo = ({ script, participants, chatName }) => { 
+export const ChatVideo = ({ script, participants, chatName, participantColors }) => { 
     const frame = useCurrentFrame();
     const { fps, width, height } = useVideoConfig(); 
+    
+    // Defensive coding for colors
+    const colors = participantColors || {};
 
     // Default data
     const messages = script || [
@@ -40,7 +43,7 @@ export const ChatVideo = ({ script, participants, chatName }) => {
     // So we must use CSS Transform to scale the entire UI from a base "Mobile" design (400px).
     const BASE_WIDTH = 400; 
     const scale = width / BASE_WIDTH;
-    const scaledHeight = height / scale; // Adjust height to fit the viewport exactly when scaled
+    const scaledHeight = height / scale; // Adjust height to fit the viewport exactly when when scaled
 
     // --- AUTO-SCROLL LOGIC ---
     // Heights are in PIXELS relative to the BASE_WIDTH (400px) design.
@@ -134,7 +137,7 @@ export const ChatVideo = ({ script, participants, chatName }) => {
                             return (
                                 <div key={index} className={`flex mb-3 ${isMe ? 'justify-end' : 'justify-start'}`} style={{ transform: `scale(${scale})` }}>
                                     <div className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
-                                        <span className={`font-bold text-sm block mb-1 ${isMe ? 'text-green-700' : 'text-gray-700'}`}>
+                                        <span className={`font-bold text-sm block mb-1 ${colors[msg.sender] || 'text-gray-700'}`}>
                                             {msg.sender}
                                         </span>
                                         <p className="text-base leading-relaxed pr-2 text-black">{msg.message}</p>

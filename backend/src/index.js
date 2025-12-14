@@ -16,7 +16,8 @@ export const RemotionRoot = () => {
                     script: [],
                     participants: ["You", "Them"],
                     chatName: "Preview",
-                    durationInFrames: 30 * 60 // Max duration for preview
+                    durationInFrames: 30 * 60, // Max duration for preview
+                    participantColors: {} // Default empty object for safety
                 }}
                 calculateMetadata={({ props }) => ({
                     durationInFrames: props.durationInFrames || (30 * 60) // Use passed duration or default to 1 min

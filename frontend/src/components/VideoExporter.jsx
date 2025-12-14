@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function VideoExporter({ script, participants, chatName }) {
+function VideoExporter({ script, participants, chatName, participantColors }) { // Added participantColors
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resolution, setResolution] = useState('720p'); // Default to 720p
@@ -20,8 +20,9 @@ function VideoExporter({ script, participants, chatName }) {
           script,
           participants,
           chatName: chatName || "Chat Simulator",
-          resolution, // Pass selected resolution
-          quality,    // Pass selected quality
+          participantColors, // Pass colors to backend
+          resolution, 
+          quality,    
         }),
       });
 

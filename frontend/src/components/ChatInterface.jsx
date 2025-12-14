@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-function ChatInterface({ messages, participants }) {
+function ChatInterface({ messages, participants, participantColors }) { // Added participantColors
   const [displayedMessages, setDisplayedMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [typingSender, setTypingSender] = useState(null); // New state to hold who is typing
   const chatBottomRef = useRef(null);
 
   // Reset displayed messages when new script is parsed
   useEffect(() => {
     setDisplayedMessages([]);
-    setIsTyping(false);
+    setTypingSender(null); // Reset typing sender too
   }, [messages]);
 
   useEffect(() => {
@@ -22,9 +22,9 @@ function ChatInterface({ messages, participants }) {
         const currentMessage = messages[messageIndex];
         const delay = Math.max(500, currentMessage.message.length * 50); // Simulate typing speed
 
-        setIsTyping(true);
+        setTypingSender(currentMessage.sender); // Set who is typing
         timer = setTimeout(() => {
-          setIsTyping(false);
+          setTypingSender(null); // Clear typing sender
           setDisplayedMessages((prev) => [...prev, currentMessage]);
           messageIndex++;
           // A small delay after message is "sent" before checking for next
@@ -46,7 +46,7 @@ function ChatInterface({ messages, participants }) {
   // Scroll to bottom when new messages are added or typing indicator changes
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [displayedMessages, isTyping]);
+  }, [displayedMessages, typingSender]); // Depend on typingSender too
 
   return (
     <div className="flex flex-col h-full bg-whatsapp-bg">
@@ -67,7 +67,7 @@ function ChatInterface({ messages, participants }) {
               }`}
             >
               {/* Always show sender name for simulation clarity */}
-              <span className={`font-bold text-sm block mb-1 ${participants[0] === msg.sender ? 'text-green-700' : 'text-gray-700'}`}>
+              <span className={`font-bold text-sm block mb-1 ${participantColors[msg.sender]}`}>
                 {msg.sender}
               </span>
               
@@ -80,10 +80,10 @@ function ChatInterface({ messages, participants }) {
             </div>
           </div>
         ))}
-        {isTyping && (
+        {typingSender && ( // Display typing indicator if a sender is typing
           <div className="flex justify-start mb-3 animate-pulse">
             <div className="bg-white px-3 py-2 rounded-lg rounded-tl-none shadow-sm text-gray-500 text-sm italic">
-              typing...
+              <span className={`font-bold ${participantColors[typingSender]}`}>{typingSender}</span> is typing...
             </div>
           </div>
         )}

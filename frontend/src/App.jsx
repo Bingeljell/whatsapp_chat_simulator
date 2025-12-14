@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ParticipantSelector from './components/ParticipantSelector';
 import ScriptInput from './components/ScriptInput';
 import ChatInterface from './components/ChatInterface'; // Import the new component
@@ -10,6 +10,33 @@ function App() {
   const [showChat, setShowChat] = useState(false); // State to control when to show chat
   const [chatName, setChatName] = useState(''); // Custom chat name
   const [replayKey, setReplayKey] = useState(0); // Key to force ChatInterface re-render
+  const [participantColors, setParticipantColors] = useState({}); // Stores colors for each participant
+
+  // Define a color palette for other participants
+  const COLORS_PALETTE = [
+    'text-blue-600',
+    'text-red-600',
+    'text-purple-600',
+    'text-yellow-700', // darker yellow for visibility
+    'text-indigo-600',
+    // Add more as needed
+  ];
+
+  // Assign colors to participants when the participant list changes
+  useEffect(() => {
+    const newColors = {};
+    newColors[participants[0]] = 'text-green-700'; // 'You' is always green
+
+    let colorIndex = 0;
+    for (let i = 1; i < participants.length; i++) {
+      const participant = participants[i];
+      // Assign a color, cycling through the palette
+      newColors[participant] = COLORS_PALETTE[colorIndex % COLORS_PALETTE.length];
+      colorIndex++;
+    }
+    setParticipantColors(newColors);
+  }, [participants]);
+
 
   const handleParticipantsChange = (newParticipants) => {
     setParticipants(newParticipants);
@@ -103,7 +130,7 @@ function App() {
               <ScriptInput participants={participants} onScriptParsed={handleScriptParsed} />
             </div>
           ) : (
-            <ChatInterface key={replayKey} messages={messages} participants={participants} />
+            <ChatInterface key={replayKey} messages={messages} participants={participants} participantColors={participantColors} />
           )}
         </main>
       </div>
@@ -122,7 +149,7 @@ function App() {
                 Replay Animation
             </button>
             {/* Video Exporter */}
-            <VideoExporter script={messages} participants={participants} chatName={chatName} />
+            <VideoExporter script={messages} participants={participants} chatName={chatName} participantColors={participantColors} />
         </div>
       )}
       
