@@ -30,6 +30,11 @@
         - Component to trigger video rendering on the backend.
         - Added Resolution (720p/1080p) and Quality (Standard/High) selection dropdowns.
 
+- **UI/UX Refinements**:
+    - **Replay Button**: Added a "Replay Animation" button to the frontend UI to restart the chat simulation without reloading the page.
+    - **User Colorization**: Implemented dynamic color assignment for participants. "You" is always green; other participants get distinct colors from a predefined palette in both frontend preview and exported video.
+    - **Typing Indicator**: Updated the typing indicator to show "<User> is typing..." in the frontend preview for better context.
+
 - **UI/UX**:
     - **Mobile Layout**: constrained `App.jsx` to a centered, mobile-width container (`max-w-md`) with shadow to mimic a phone screen on desktop.
     - **Header**:
@@ -65,8 +70,10 @@
     - **Video Duration**: Fixed bug where video length was capped at 1 minute by moving duration calculation *before* composition selection in `backend/index.js`, ensuring `calculateMetadata` receives the correct duration prop.
     - **Auto-Scroll**: Implemented auto-scroll logic in the backend video component to prevent messages from disappearing off-screen during long chats.
 
+### Known Bugs
+- **Video Duration Mismatch**: The exported video length is currently fixed to the default Composition duration (1 minute) even when the actual animation finishes earlier. The `durationInFrames` override in `renderMedia` is not taking full effect.
+
+### Limitations
+- **Video Typing Indicator**: The exported video currently shows a generic "typing..." indicator, whereas the frontend preview shows "<User> is typing...". This parity update is pending for the backend.
+
 ### Dependencies
-- Added `mammoth` for document parsing (frontend).
-- Added `tailwindcss`, `postcss`, `autoprefixer` (frontend).
-- Added `@remotion/bundler`, `@remotion/renderer`, `@remotion/cli`, `@remotion/tailwind`, `remotion`, `express`, `cors`, `css-loader`, `style-loader`, `postcss-loader` (backend).
-- Added `concurrently` (root `package.json`).
