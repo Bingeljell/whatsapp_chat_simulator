@@ -33,7 +33,8 @@
 - **UI/UX Refinements**:
     - **Replay Button**: Added a "Replay Animation" button to the frontend UI to restart the chat simulation without reloading the page.
     - **User Colorization**: Implemented dynamic color assignment for participants. "You" is always green; other participants get distinct colors from a predefined palette in both frontend preview and exported video.
-    - **Typing Indicator**: Updated the typing indicator to show "<User> is typing..." in the frontend preview for better context.
+    - **Typing Indicator**: Updated the typing indicator to show "<User> is typing..." in the frontend preview and backend video export for better context.
+    - **User Profile Pictures**: Added generic user profile pictures (initials on a gray background) to received messages in both frontend preview and exported video.
 
 - **UI/UX**:
     - **Mobile Layout**: constrained `App.jsx` to a centered, mobile-width container (`max-w-md`) with shadow to mimic a phone screen on desktop.
@@ -70,9 +71,9 @@
     - **Video Duration**: Fixed bug where video length was capped at 1 minute by moving duration calculation *before* composition selection in `backend/index.js`, ensuring `calculateMetadata` receives the correct duration prop.
     - **Auto-Scroll**: Implemented auto-scroll logic in the backend video component to prevent messages from disappearing off-screen during long chats.
 - **Frontend Logic**:
-    - Fixed `ReferenceError: useState is not defined` in `ChatInterface.jsx` by adding the missing React hooks import.
-    - Fixed `Uncaught SyntaxError` regarding default export in `ChatInterface.jsx`.
-    - Fixed `VideoExporter` crash by removing undefined `resolution` and `quality` props passed from `App.jsx`.
+    - Fixed `ReferenceError: useState is not defined` in `frontend/src/components/ChatInterface.jsx` by adding the missing React hooks import.
+    - Fixed `Uncaught SyntaxError` regarding default export in `frontend/src/components/ChatInterface.jsx`.
+    - Fixed `ReferenceError: resolution is not defined` in `frontend/src/App.jsx` by removing undefined props passed to `VideoExporter`.
 
 ### Known Bugs
 - **Video Duration Mismatch**: The exported video length is currently fixed to the default Composition duration (1 minute) even when the actual animation finishes earlier. The `durationInFrames` override in `renderMedia` is not taking full effect.

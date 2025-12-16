@@ -140,7 +140,12 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
                             const isMe = activeParticipants[0] === msg.sender;
 
                             return (
-                                <div key={index} className={`flex mb-3 ${isMe ? 'justify-end' : 'justify-start'}`} style={{ transform: `scale(${scale})` }}>
+                                <div key={index} className={`flex mb-3 items-start ${isMe ? 'justify-end' : 'justify-start'}`} style={{ transform: `scale(${scale})` }}>
+                                    {!isMe && ( // Only show avatar for received messages
+                                        <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-2 text-sm font-semibold text-gray-800 flex-shrink-0">
+                                            {msg.sender.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
                                     <div className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
                                         <span className={`font-bold text-sm block mb-1 ${colors[msg.sender] || 'text-gray-700'}`}>
                                             {msg.sender}

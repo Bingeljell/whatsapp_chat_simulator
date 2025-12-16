@@ -92,7 +92,7 @@ Organize the project for modularity, scalability, and ease of maintenance. We ar
 9. **[x] Implement "Replay" button in the frontend UI.**
 10. **[x] Implement User Colorization for messages in both frontend and backend.**
 11. **[x] Update "Typing" Indicator to show "<user> is typing..." in both frontend and backend.**
-12. **[ ] Add Generic User/Group Icons in chat bubbles and headers for both frontend and backend.**
+12. **[x] Add Generic User/Group Icons in chat bubbles and headers for both frontend and backend.**
 
 #### Core Feature Enhancements
 13. **[ ] Add "Read" receipts (blue ticks) animation.**
