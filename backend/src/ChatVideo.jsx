@@ -64,10 +64,15 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
         }
     });
 
-    const isTyping = timedMessages.some(msg => frame >= msg.typingStart && frame < msg.typingEnd);
-    if (isTyping) {
-        totalContentHeight += 56; // ~3.5rem typing indicator
-    }
+    // Find who is typing
+    let currentTypingSender = null;
+    const isTypingActive = timedMessages.some(msg => {
+        if (frame >= msg.typingStart && frame < msg.typingEnd) {
+            currentTypingSender = msg.sender;
+            return true;
+        }
+        return false;
+    });
 
     // Visible Area: Total Height (scaledHeight) - Header (64px) - Footer (64px)
     const visibleArea = scaledHeight - 64 - 64;
@@ -145,10 +150,10 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
                                 </div>
                             );
                         })}
-                        {isTyping && (
+                        {isTypingActive && currentTypingSender && (
                             <div className="flex justify-start mb-3 animate-pulse">
                                 <div className="bg-white px-3 py-2 rounded-lg rounded-tl-none shadow-sm text-gray-500 text-sm italic">
-                                    typing...
+                                    <span className={`font-bold ${colors[currentTypingSender] || 'text-gray-700'}`}>{currentTypingSender}</span> is typing...
                                 </div>
                             </div>
                         )}
