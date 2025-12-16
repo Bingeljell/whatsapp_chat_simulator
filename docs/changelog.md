@@ -69,6 +69,10 @@
     - **Video Resolution & Quality**: Implemented "Responsive Font Sizing" in `backend/src/ChatVideo.jsx` to scale UI elements (text, padding, icons) based on the target render width (1080p). This replaced manual scaling hacks and fixed clipping issues.
     - **Video Duration**: Fixed bug where video length was capped at 1 minute by moving duration calculation *before* composition selection in `backend/index.js`, ensuring `calculateMetadata` receives the correct duration prop.
     - **Auto-Scroll**: Implemented auto-scroll logic in the backend video component to prevent messages from disappearing off-screen during long chats.
+- **Frontend Logic**:
+    - Fixed `ReferenceError: useState is not defined` in `ChatInterface.jsx` by adding the missing React hooks import.
+    - Fixed `Uncaught SyntaxError` regarding default export in `ChatInterface.jsx`.
+    - Fixed `VideoExporter` crash by removing undefined `resolution` and `quality` props passed from `App.jsx`.
 
 ### Known Bugs
 - **Video Duration Mismatch**: The exported video length is currently fixed to the default Composition duration (1 minute) even when the actual animation finishes earlier. The `durationInFrames` override in `renderMedia` is not taking full effect.
