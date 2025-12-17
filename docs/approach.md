@@ -95,7 +95,7 @@ Organize the project for modularity, scalability, and ease of maintenance. We ar
 12. **[x] Add Generic User/Group Icons in chat bubbles and headers for both frontend and backend.**
 
 #### Core Feature Enhancements
-13. **[ ] Add "Read" receipts (blue ticks) animation.**
+13. **[x] Add "Read" receipts (blue ticks) animation.**
 14. **[ ] Implement Emoji picker support.**
 15. **[ ] Improve error handling with better visual feedback.**
 16. **[ ] Add support for image/media messages in script.**

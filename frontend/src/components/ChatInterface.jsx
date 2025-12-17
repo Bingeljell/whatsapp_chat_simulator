@@ -1,14 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 function ChatInterface({ messages, participants, participantColors }) { // Added participantColors
   const [displayedMessages, setDisplayedMessages] = useState([]);
   const [typingSender, setTypingSender] = useState(null); // New state to hold who is typing
   const chatBottomRef = useRef(null);
+  const receiptTimersRef = useRef([]);
+
+  const clearReceiptTimers = () => {
+    receiptTimersRef.current.forEach(clearTimeout);
+    receiptTimersRef.current = [];
+  };
+
+  const formatTime = (timestampMs) =>
+    new Date(timestampMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const updateReceipt = (id, receipt) => {
+    setDisplayedMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, receipt } : msg))
+    );
+  };
 
   // Reset displayed messages when new script is parsed
   useEffect(() => {
     setDisplayedMessages([]);
     setTypingSender(null); // Reset typing sender too
+    clearReceiptTimers();
   }, [messages]);
 
   useEffect(() => {
@@ -25,7 +41,24 @@ function ChatInterface({ messages, participants, participantColors }) { // Added
         setTypingSender(currentMessage.sender); // Set who is typing
         timer = setTimeout(() => {
           setTypingSender(null); // Clear typing sender
-          setDisplayedMessages((prev) => [...prev, currentMessage]);
+          const id = messageIndex;
+          const timestampMs = Date.now();
+          const isMe = participants[0] === currentMessage.sender;
+          const messageToDisplay = {
+            ...currentMessage,
+            id,
+            timestampMs,
+            receipt: isMe ? 'sent' : null,
+          };
+
+          setDisplayedMessages((prev) => [...prev, messageToDisplay]);
+
+          if (isMe) {
+            receiptTimersRef.current.push(
+              setTimeout(() => updateReceipt(id, 'delivered'), 600),
+              setTimeout(() => updateReceipt(id, 'read'), 1600)
+            );
+          }
           messageIndex++;
           // A small delay after message is "sent" before checking for next
           setTimeout(displayNextMessage, 1000); 
@@ -40,6 +73,7 @@ function ChatInterface({ messages, participants, participantColors }) { // Added
     return () => {
       clearTimeout(timer);
       clearTimeout(startTimer);
+      clearReceiptTimers();
     };
   }, [messages]);
 
@@ -47,6 +81,55 @@ function ChatInterface({ messages, participants, participantColors }) { // Added
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [displayedMessages, typingSender]); // Depend on typingSender too
+
+  const ReadReceipt = ({ receipt }) => {
+    const base = 'h-4 w-4';
+    const common = 'inline-block align-middle';
+
+    if (receipt === 'sent') {
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className={`${base} ${common} text-gray-400`}
+          fill="none"
+        >
+          <path
+            d="M4 12.5l4.5 4.5L20 5.5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    }
+
+    const color = receipt === 'read' ? 'text-blue-500' : 'text-gray-400';
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        className={`${base} ${common} ${color} transition-colors duration-300`}
+        fill="none"
+      >
+        <path
+          d="M2.5 12.5l4.5 4.5L18.5 5.5"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M6.5 12.5l4.5 4.5L22.5 5.5"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  };
 
   return (
     <div className="flex flex-col h-full bg-whatsapp-bg">
@@ -65,7 +148,7 @@ function ChatInterface({ messages, participants, participantColors }) { // Added
                           </div>
                         )}
                         <div
-                          className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${
+                          className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-6 ${
                             participants[0] === msg.sender
                               ? 'bg-whatsapp-bubble text-black rounded-tr-none'
                               : 'bg-white text-black rounded-tl-none'
@@ -77,9 +160,10 @@ function ChatInterface({ messages, participants, participantColors }) { // Added
               
               <p className="text-base leading-relaxed pr-2">{msg.message}</p>
               
-              {/* Timestamp */}
-              <span className="text-[10px] text-gray-500 absolute bottom-1 right-2">
-                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {/* Timestamp + Read Receipts */}
+              <span className="text-[10px] text-gray-500 absolute bottom-1 right-2 flex items-center gap-1">
+                <span>{formatTime(msg.timestampMs)}</span>
+                {participants[0] === msg.sender && msg.receipt && <ReadReceipt receipt={msg.receipt} />}
               </span>
             </div>
           </div>

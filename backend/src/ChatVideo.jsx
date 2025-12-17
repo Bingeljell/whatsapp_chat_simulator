@@ -74,6 +74,23 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
         return false;
     });
 
+    const formatTimeFromIndex = (index) => {
+        const baseMinutes = 9 * 60; // 09:00
+        const totalMinutes = baseMinutes + index;
+        const hours = Math.floor(totalMinutes / 60) % 24;
+        const minutes = totalMinutes % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    };
+
+    const getReceiptForFrame = (startFrame) => {
+        const deliveredAt = startFrame + Math.round(fps * 0.6);
+        const readAt = startFrame + Math.round(fps * 1.6);
+        if (frame < startFrame) return null;
+        if (frame < deliveredAt) return 'sent';
+        if (frame < readAt) return 'delivered';
+        return 'read';
+    };
+
     // Visible Area: Total Height (scaledHeight) - Header (64px) - Footer (64px)
     const visibleArea = scaledHeight - 64 - 64;
 
@@ -138,6 +155,8 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
                             const scale = interpolate(progress, [0, 1], [0, 1]);
                             if (frame < msg.startFrame) return null;
                             const isMe = activeParticipants[0] === msg.sender;
+                            const receipt = isMe ? getReceiptForFrame(msg.startFrame) : null;
+                            const timeText = formatTimeFromIndex(index);
 
                             return (
                                 <div key={index} className={`flex mb-3 items-start ${isMe ? 'justify-end' : 'justify-start'}`} style={{ transform: `scale(${scale})` }}>
@@ -146,11 +165,31 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
                                             {msg.sender.charAt(0).toUpperCase()}
                                         </div>
                                     )}
-                                    <div className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-5 ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
+                                    <div className={`px-3 py-2 rounded-lg shadow-sm max-w-[80%] break-words relative pb-6 ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
                                         <span className={`font-bold text-sm block mb-1 ${colors[msg.sender] || 'text-gray-700'}`}>
                                             {msg.sender}
                                         </span>
                                         <p className="text-base leading-relaxed pr-2 text-black">{msg.message}</p>
+                                        <span className="text-[10px] text-gray-500 absolute bottom-1 right-2 flex items-center gap-1">
+                                            <span>{timeText}</span>
+                                            {receipt && (
+                                                receipt === 'sent' ? (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-4 w-4 text-gray-400" fill="none">
+                                                        <path d="M4 12.5l4.5 4.5L20 5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        className={`h-4 w-4 ${receipt === 'read' ? 'text-blue-500' : 'text-gray-400'}`}
+                                                        fill="none"
+                                                    >
+                                                        <path d="M2.5 12.5l4.5 4.5L18.5 5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                        <path d="M6.5 12.5l4.5 4.5L22.5 5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                )
+                                            )}
+                                        </span>
                                     </div>
                                 </div>
                             );

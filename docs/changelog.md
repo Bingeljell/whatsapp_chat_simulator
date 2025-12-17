@@ -35,6 +35,7 @@
     - **User Colorization**: Implemented dynamic color assignment for participants. "You" is always green; other participants get distinct colors from a predefined palette in both frontend preview and exported video.
     - **Typing Indicator**: Updated the typing indicator to show "<User> is typing..." in the frontend preview and backend video export for better context.
     - **User Profile Pictures**: Added generic user profile pictures (initials on a gray background) to received messages in both frontend preview and exported video.
+    - **Read Receipts**: Added WhatsApp-style read receipts (single tick → double tick → blue double tick) for sent messages in both the frontend preview and exported video.
 
 - **UI/UX**:
     - **Mobile Layout**: constrained `App.jsx` to a centered, mobile-width container (`max-w-md`) with shadow to mimic a phone screen on desktop.
@@ -79,6 +80,6 @@
 - **Video Duration Mismatch**: The exported video length is currently fixed to the default Composition duration (1 minute) even when the actual animation finishes earlier. The `durationInFrames` override in `renderMedia` is not taking full effect.
 
 ### Limitations
-- **Video Typing Indicator**: The exported video currently shows a generic "typing..." indicator, whereas the frontend preview shows "<User> is typing...". This parity update is pending for the backend.
+None at this time.
 
 ### Dependencies
