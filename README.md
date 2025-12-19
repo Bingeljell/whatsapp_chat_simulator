@@ -10,7 +10,7 @@
 - **Participant Selection**: Users choose the number of chat participants and assign names.
 - **Script Input**: Enter dialogues via textarea or upload files (.txt or .docx).
 - **Animation**: Simulates real-time messaging with typing indicators and scrolling.
-- **Video Export (Future/Optional)**: Generate MP4 or GIF of the animated chat using server-side rendering or React-based video tools.
+- **Video Export**: Generate MP4 videos of the animated chat using a queue-based rendering server.
 - **Responsive Design**: Works on desktop and mobile browsers.
 - **Validation**: Checks for input errors like mismatched senders.
 
@@ -20,54 +20,57 @@
 
 ## Tech Stack
 
-- **Frontend**: React.js with JavaScript (ES6+).
-- **Styling**: Tailwind CSS for **WhatsApp Mobile UI** (specifically targeting mobile layout, not desktop).
-- **Animations**: Anime.js or GSAP for message sequencing.
-- **File Parsing**: Mammoth.js for .docx (client-side).
-- **Video Generation (Future)**: Remotion (React-based) or Puppeteer (server-side) for high-fidelity export.
-- **Backend (Optional)**: Node.js/Express for advanced file handling or video rendering.
-- **Deployment**: Vercel or Netlify.
-
-
-## License
-
-MIT License. See LICENSE file for details.
+- **Frontend**: React.js, Tailwind CSS, Vite.
+- **Backend**: Node.js, Express, Remotion (for server-side video rendering).
+- **Database (Optional)**: Supabase (for analytics).
 
 ## Installation
 
 1. Clone the repository: `git clone <repo-url>`.
-2. Navigate to the project: `cd WA_Chat_Simulator`.
-3. Install all dependencies:
+2. Navigate to the project: `cd whatsapp_chat_simulator`.
+3. Install dependencies:
    ```bash
-   npm run install:all
-   # OR manually:
-   # npm install
-   # cd frontend && npm install
-   # cd backend && npm install
+   cd frontend && npm install
+   cd ../backend && npm install
    ```
 
-## Usage
+## Configuration (Environment Variables)
 
-This project is a monorepo containing a React frontend and a Node.js/Remotion backend.
+The backend supports optional environment variables for Analytics. Create a `.env` file in `/backend` (or set them in your VPS environment):
+
+```env
+# Optional: Supabase Analytics
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
+```
+
+*If these are missing, analytics will be saved locally to `backend/data/analytics.json`.*
+
+## Usage
 
 **1. Start the Backend (Video Renderer):**
 Open a terminal and run:
 ```bash
-cd backend && npm start
+cd backend
 npm start
 ```
-*Server will run at http://localhost:8000*
+*Server runs at http://localhost:8000. It will pre-bundle the video assets on startup.*
 
 **2. Start the Frontend (UI):**
 Open a **new** terminal window and run:
 ```bash
-cd frontend && npm run dev
+cd frontend
 npm run dev
 ```
-*App will open at http://localhost:5173*
+*App opens at http://localhost:5173*
 
-**3. Generate Video:**
-- Create your chat script in the UI.
-- Click "Process Script" to preview.
-- Click the **"Export Video (MP4)"** button overlaying the chat.
-- The backend will render the video (this may take a few seconds) and download it automatically.
+## Deployment (DigitalOcean / VPS)
+
+This app is production-ready for low-resource environments (1GB RAM):
+1.  **Queue System**: The backend processes only **one video at a time** to prevent crashes.
+2.  **Polling**: The frontend polls for status, showing users their queue position.
+3.  **Bundle Caching**: Webpack runs only once at startup, saving CPU.
+
+## License
+
+MIT License.
