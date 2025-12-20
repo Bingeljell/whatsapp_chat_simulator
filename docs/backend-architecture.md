@@ -1,12 +1,14 @@
 # Backend Architecture
 
-This document details the architecture of the **WhatsApp Chat Simulator** backend. The backend is a specialized Node.js server designed to render high-quality MP4 videos using **Remotion**.
+This document details the architecture of the **WhatsApp Chat Simulator** backend. The backend is a specialized Node.js server designed to render high-quality MP4 videos using **Remotion**, optimized for production deployment on low-resource VPS environments (e.g., DigitalOcean Basic Droplet).
 
 ## Tech Stack
 - **Runtime**: Node.js
 - **Server Framework**: Express.js
 - **Video Engine**: Remotion (Server-Side Rendering)
 - **Bundler**: Webpack (via `@remotion/bundler`)
+- **Queue System**: In-memory FIFO queue (custom implementation)
+- **Analytics**: Service adapter (Supabase or Local JSON)
 - **Styling**: Tailwind CSS (processed via PostCSS)
 
 ## Directory Structure
@@ -15,10 +17,14 @@ The backend code resides in the `/backend` directory.
 ```text
 /backend
 ├── src/
+│   ├── services/
+│   │   └── analytics.js # Handles logging (Supabase/JSON)
 │   ├── ChatVideo.jsx    # The core Remotion video component
 │   ├── index.js         # Remotion Root (Composition registration)
 │   └── style.css        # Tailwind directives
-├── index.js             # Express server entry point
+├── data/
+│   └── analytics.json   # Local fallback for analytics logs
+├── index.js             # Express server entry point (Queue & API)
 ├── package.json         # Dependencies
 ├── postcss.config.js    # PostCSS config for Tailwind
 └── tailwind.config.js   # Tailwind config (mirrors frontend)
@@ -26,53 +32,52 @@ The backend code resides in the `/backend` directory.
 
 ## Core Workflows
 
-### 1. The Rendering Pipeline (`index.js`)
-The Express server listens on port `8000` and exposes a single endpoint: `POST /render`.
+### 1. Startup Optimization
+When the server starts (`npm start`), it immediately executes `bundle()`.
+- **Purpose**: Pre-compiles the React/Remotion code into a Webpack bundle.
+- **Benefit**: Removes the heavy CPU cost of bundling from the user request flow. Subsequent video render requests reuse this cached bundle, ensuring instant start times.
 
-**Process Flow:**
-1.  **Receive Request**: Accepts JSON body containing:
-    - `script`: Array of message objects.
-    - `participants`: List of names.
-    - `resolution`: '720p' or '1080p'.
-    - `quality`: 'standard' or 'high'.
-2.  **Configuration**:
-    - Determines `compositionId` (e.g., 'ChatVideo-1080p') based on resolution.
-    - Sets `crf` (Constant Rate Factor) based on quality (18 vs 10).
-3.  **Duration Calculation**:
-    - Runs `calculateDuration(script)` to determine the exact frame count needed.
-    - Logic: Sums up typing time + reading time for every message + buffers.
-4.  **Bundling**: Calls `bundle()` to compile the React code in `src/` into a Webpack bundle.
-    - *Crucial*: Uses `enableTailwind()` override to ensure CSS is processed correctly.
-5.  **Composition Selection**: Calls `selectComposition` to get metadata.
-    - *Crucial*: Passes `durationInFrames` in `inputProps` so the Composition registers with the correct length.
-6.  **Rendering**: Calls `renderMedia()` to generate the MP4.
-    - Uses H.264 codec.
-    - Saves to `os.tmpdir()`.
-7.  **Delivery**: Streams the file to the client and deletes the temporary file (`fs.unlinkSync`).
+### 2. The Queue-Based Rendering Pipeline (`index.js`)
+To prevent server crashes from concurrent heavy rendering tasks, the system uses a **Strict FIFO (First-In-First-Out) Queue**.
 
-### 2. The Video Component (`src/ChatVideo.jsx`)
-This is the React component that Remotion renders frame-by-frame. It is a "twin" of the frontend `ChatInterface` but optimized for video.
+**API Flow:**
 
-**Key Logic:**
-- **Frame-Based Timing**: Instead of `setTimeout`, it uses `useCurrentFrame()` and pre-calculated start/end frames for every message to trigger animations.
-- **Responsive Scaling**:
-    - It does **not** use fixed pixels for layout.
-    - It calculates a `baseFontSize` based on the render `width` (e.g., `width / 25`).
-    - The root container applies `style={{ fontSize: baseFontSize }}`.
-    - All UI elements (padding, text size) use Tailwind classes (which use `rem` units), allowing them to scale perfectly from 400px (preview) up to 1080px (export) without code changes or blurriness.
-- **Auto-Scroll**:
-    - Calculates the cumulative height of messages visible at the current frame.
-    - If height exceeds the viewport, applies a `transform: translateY()` to scroll the content up smoothly.
+1.  **Enqueue (`POST /api/queue`)**:
+    - Accepts `script`, `participants`, `config`.
+    - Generates a unique `jobId` (UUID).
+    - Adds the job to the in-memory `jobQueue`.
+    - Returns `{ success: true, jobId, position }` immediately.
+    
+2.  **Poll Status (`GET /api/status/:jobId`)**:
+    - Frontend polls this endpoint every ~2 seconds.
+    - Returns status: `'queued'`, `'processing'`, `'completed'`, or `'error'`.
+    - If queued, returns the current `position` in line (e.g., "You are #2").
 
-### 3. Remotion Root (`src/index.js`)
-Registers the available Compositions.
-- **Why multiple compositions?**
-    - Registers `ChatVideo-720p` (Width: 720) and `ChatVideo-1080p` (Width: 1080).
-    - This forces Remotion to allocate the correct buffer size for the rendering engine, ensuring true High Definition output (vs upscaling).
-- **Dynamic Metadata**: Uses `calculateMetadata` to accept `durationInFrames` from the server prop, ensuring the video cuts exactly when the chat ends.
+3.  **Process Queue (Internal Loop)**:
+    - The server watches the queue. If `isProcessing` is false and queue has items:
+    - **Pop**: Takes the first job.
+    - **Lock**: Sets `isProcessing = true`.
+    - **Render**: Calls `renderMedia()` using the cached bundle and job payload.
+    - **Save**: Writes output to `os.tmpdir()/whatsapp_simulator_exports/{jobId}.mp4`.
+    - **Unlock**: Sets `isProcessing = false` and triggers the next job.
+    - **Log**: Calls `AnalyticsService.logRender()`.
 
-## Scaling Strategy
-To achieve "Retina" quality video:
-1.  We render at a high resolution (e.g., 1080x1920).
-2.  We scale the `root font-size` proportionally.
-3.  Since HTML/CSS rendering in Chrome is vector-based (for text and border-radius), increasing the font size renders crisp, sharp text at the target resolution. This avoids the blurriness associated with raster image upscaling.
+4.  **Download (`GET /api/download/:jobId`)**:
+    - Streams the completed MP4 file to the user.
+
+### 3. Analytics Service (`src/services/analytics.js`)
+Tracks usage stats (Unique Users, Total Renders) without mandatory login.
+- **Adapter Pattern**:
+    - Checks for `SUPABASE_URL` and `SUPABASE_KEY` env vars.
+    - **If Present**: Logs render metadata to Supabase `renders` table.
+    - **If Missing**: Appends metadata to `backend/data/analytics.json`.
+- **Privacy**: Hashes IP addresses using SHA-256 before storing to track "unique users" anonymously.
+
+### 4. The Video Component (`src/ChatVideo.jsx`)
+(Same as previous architecture)
+- **Responsive Scaling**: Uses dynamic root `fontSize` based on render width (720px/1080px) to ensure "Retina" quality text at any resolution.
+- **Auto-Scroll**: Calculates cumulative message height frame-by-frame to animate scrolling.
+
+## Deployment Strategy (DigitalOcean)
+- **Process Management**: Use `pm2` to keep the server alive and restart on crash.
+- **Resource Safety**: The Queue ensures that RAM usage remains stable (approx 1 Chromium instance) regardless of how many users try to export videos simultaneously.

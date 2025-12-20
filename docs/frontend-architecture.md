@@ -71,13 +71,18 @@ The visual simulation of the WhatsApp chat.
     - `messages`: The full script to animate.
     - `participants`: Used to determine which messages are "sent" vs "received".
 
-### 5. `components/VideoExporter.jsx`
-Controls the video generation process.
-- **Features**:
-    - Resolution Selection (720p, 1080p).
-    - Quality Selection (Standard, High).
-    - **API Call**: Sends the script and config to the Backend (`http://localhost:8000/render`).
-    - Handles the download of the resulting MP4 file.
+### 5. `components/VideoExporter.jsx` (Refactored for Queueing)
+Controls the video generation process via the Backend Queue API.
+- **State Machine**:
+    - `idle`: Initial state.
+    - `initializing`: Sending request to queue.
+    - `queued`: Waiting in line (Displays "Queue Position: #X").
+    - `processing`: Backend is rendering (Displays "Rendering Video...").
+    - `completed`: File ready (Triggers auto-download).
+    - `error`: Something went wrong.
+- **Logic**:
+    - Uses a polling mechanism (`setInterval` / recursive `setTimeout`) to check `/api/status/:jobId` every 2 seconds.
+    - Provides real-time feedback to the user about their position in the queue.
 
 ## Styling Strategy
 - **Tailwind CSS**: Used for all styling.
@@ -93,4 +98,6 @@ Controls the video generation process.
 2.  **Parsing**: `ScriptInput` parses text -> Array of Objects.
 3.  **State Update**: `App.jsx` receives parsed data and switches `showChat` to `true`.
 4.  **Preview**: `ChatInterface` receives data and runs the animation loop using React state.
-5.  **Export**: `VideoExporter` sends the *same* data JSON to the Backend for high-fidelity rendering.
+5.  **Export Request**: `VideoExporter` POSTs data to `/api/queue` and receives a `jobId`.
+6.  **Polling**: Frontend polls `/api/status/:jobId` until status is `completed`.
+7.  **Download**: Frontend fetches `/api/download/:jobId`.
