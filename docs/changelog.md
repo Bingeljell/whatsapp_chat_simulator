@@ -3,6 +3,11 @@
 ## [Unreleased] - 2025-12-10
 
 ### Added
+- **Emoji Picker Integration**:
+    - Integrated `emoji-picker-react` into `frontend/src/components/ScriptInput.jsx`.
+    - Added a button to toggle emoji picker visibility.
+    - Implemented logic to insert selected emojis at the cursor position in the script textarea.
+
 - **Project Setup**:
     - Initialized React project using Vite (`npm create vite@latest`).
     - Installed and configured Tailwind CSS v3.4.17 (stable) for styling.
@@ -60,6 +65,7 @@
     - Updated `docs/approach.md` and `docs/changelog.md` with progress status and detailed change history.
 
 ### Fixed
+- **Emoji Picker Positioning**: Adjusted positioning of the emoji picker in `frontend/src/components/ScriptInput.jsx` to ensure it overflows correctly outside the mobile frame, resolving issues with scrollbars and visibility.
 - **Animation Bug**: Prevented chat animation from starting immediately upon typing in `ScriptInput`; now triggered by explicit button click.
 - **Sender Names**: Ensured sender names are always visible for clarity above all messages.
 - **Backend Remotion Rendering**:
