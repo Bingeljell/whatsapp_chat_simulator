@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
 import { useCurrentFrame, useVideoConfig, spring, AbsoluteFill, interpolate } from 'remotion';
+import { loadFont } from "@remotion/google-fonts/NotoColorEmoji";
 import './style.css'; 
+
+const { fontFamily } = loadFont();
 
 const calculateTimings = (messages, fps) => {
     let currentFrame = 0;
@@ -107,7 +110,8 @@ export const ChatVideo = ({ script, participants, chatName, participantColors })
                 transform: `scale(${scale})`,
                 transformOrigin: 'top left',
                 overflow: 'hidden',
-                position: 'relative'
+                position: 'relative',
+                    fontFamily: `sans-serif, ${fontFamily}`
             }}>
                 {/* Background / Wallpaper */}
                 <div className="absolute inset-0 bg-[#ECE5DD] opacity-100" />
