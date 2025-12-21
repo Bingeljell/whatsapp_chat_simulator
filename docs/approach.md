@@ -96,6 +96,6 @@ Organize the project for modularity, scalability, and ease of maintenance. We ar
 
 #### Core Feature Enhancements
 13. **[x] Add "Read" receipts (blue ticks) animation.**
-14. **[ ] Implement Emoji picker support.**
+14. **[x] Implement Emoji picker support.**
 15. **[ ] Improve error handling with better visual feedback.**
 16. **[ ] Add support for image/media messages in script.**

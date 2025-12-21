@@ -3,10 +3,9 @@
 ## [Unreleased] - 2025-12-10
 
 ### Added
-- **Emoji Picker Integration**:
-    - Integrated `emoji-picker-react` into `frontend/src/components/ScriptInput.jsx`.
-    - Added a button to toggle emoji picker visibility.
-    - Implemented logic to insert selected emojis at the cursor position in the script textarea.
+- **Emoji Picker Integration & Backend Font Support**:
+    - Integrated `emoji-picker-react` into `frontend/src/components/ScriptInput.jsx` with a button to toggle picker visibility and logic to insert selected emojis.
+    - Updated backend `backend/src/ChatVideo.jsx` to load `Noto Color Emoji` via `@remotion/google-fonts` and correctly apply the font stack (`sans-serif, Noto Color Emoji`) to ensure colored emojis render correctly in video exports without affecting normal text rendering.
 
 - **Project Setup**:
     - Initialized React project using Vite (`npm create vite@latest`).
